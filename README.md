@@ -65,10 +65,10 @@ FoxTimeEvent uses a dynamic verification system that adjusts the frequency of ch
 
 ### Verification Frequency
 
-- **More than 26 hours remaining:** Daily checks.
-- **Between ~11 minutes and 26 hours:** Hourly checks.
-- **Between ~1 minute and ~11 minutes:** Checks every ten minutes.
-- **Less than ~1 minute:** Checks every minute.
+- **More than >=26 hours remaining:** Daily checks.
+- **Between +1 hour and -26 hours:** Hourly checks.
+- **Between +11 minute and -1 hour:** Checks every ten minutes.
+- **Less than -11 minute:** Checks every minute.
 
 ### Benefits
 
