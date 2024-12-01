@@ -1,11 +1,11 @@
--- Arquivo: FoxTimeEventStorage.lua
+-- File: FoxTimeEventStorage.lua
 
 FoxTimeEventStorage = {}
 
-local eventsFilePath = "/FoxTimeEvent/eventos_ativos.txt"
+local eventsFilePath = "/FoxTimeEvent/active_events.txt"
 local counterFilePath = "/FoxTimeEvent/event_counter.txt"
 
--- Função para verificar ou criar um arquivo
+-- Function to verify or create a file
 function FoxTimeEventStorage.verifyOrCreateFile(filePath)
     local file = getFileReader(filePath, false)
     if not file then
@@ -13,16 +13,16 @@ function FoxTimeEventStorage.verifyOrCreateFile(filePath)
         if newFile then
             newFile:write("")
             newFile:close()
-            print("Arquivo criado: " .. filePath)
+            print("File created: " .. filePath)
         else
-            print("Erro ao criar o arquivo: " .. filePath)
+            print("Error creating file: " .. filePath)
         end
     else
         file:close()
     end
 end
 
--- Função para carregar eventos do arquivo
+-- Function to load events from the file
 function FoxTimeEventStorage.loadEvents()
     local events = {}
     FoxTimeEventStorage.verifyOrCreateFile(eventsFilePath)
@@ -35,28 +35,28 @@ function FoxTimeEventStorage.loadEvents()
                 if event and event.idprocess and event.data_start and event.data_end then
                     table.insert(events, event)
                 else
-                    print("[FoxTimeEventStorage] Evento inválido ignorado: " .. line)
+                    print("[FoxTimeEventStorage] Invalid event ignored: " .. line)
                 end
             end
             line = file:readLine()
         end
         file:close()
     else
-        print("Erro ao carregar os eventos salvos em " .. eventsFilePath)
+        print("Error loading events from " .. eventsFilePath)
     end
     return events
 end
 
--- Função para salvar eventos no arquivo
+-- Function to save events to the file
 function FoxTimeEventStorage.saveEvents(events)
     local file = getFileWriter(eventsFilePath, false, false)
     if file then
         for _, event in ipairs(events) do
             local idPlayer = tostring(event.idPlayer or "UnknownPlayer")
             local customMessage = tostring(event.customMessage or "customize this msg")
-            customMessage = customMessage:sub(1, 50)  -- Limitar a 50 caracteres
+            customMessage = customMessage:sub(1, 50)  -- Limit to 50 characters
 
-            print(string.format("[FoxTimeEventStorage] Salvando evento: idprocess=%s, idPlayer=%s", event.idprocess, idPlayer))
+            print(string.format("[FoxTimeEventStorage] Saving event: idprocess=%s, idPlayer=%s", event.idprocess, idPlayer))
 
             local line = string.format("|%s|%s|%s|%s|%s|%s|%s|%s|\n",
                 event.idprocess,
@@ -72,13 +72,13 @@ function FoxTimeEventStorage.saveEvents(events)
         end
         file:close()
     else
-        print("Erro ao salvar os eventos em " .. eventsFilePath)
+        print("Error saving events to " .. eventsFilePath)
     end
 end
 
--- Função para analisar uma linha do arquivo de eventos
+-- Function to parse a line from the events file
 function FoxTimeEventStorage.parseEventLine(line)
-    -- Remover os caracteres de início e fim '|'
+    -- Remove the starting and ending '|' characters
     line = line:sub(2, -2)
     local parts = {}
     for part in string.gmatch(line, "([^|]+)") do
@@ -98,12 +98,12 @@ function FoxTimeEventStorage.parseEventLine(line)
         }
         return event
     else
-        print("Linha inválida no arquivo de eventos: " .. line)
+        print("Invalid event line: " .. line)
         return nil
     end
 end
 
--- Função para converter uma string de tempo em uma tabela
+-- Function to convert a time string to a table
 function FoxTimeEventStorage.parseTimeTable(timeString)
     local timeParts = {}
     for part in string.gmatch(timeString, "([^,]+)") do
@@ -112,7 +112,7 @@ function FoxTimeEventStorage.parseTimeTable(timeString)
     return timeParts
 end
 
--- Função para obter o contador de IDs
+-- Function to get the event ID counter
 function FoxTimeEventStorage.getEventIdCounter()
     FoxTimeEventStorage.verifyOrCreateFile(counterFilePath)
     local file = getFileReader(counterFilePath, false)
@@ -124,13 +124,13 @@ function FoxTimeEventStorage.getEventIdCounter()
     return 1
 end
 
--- Função para salvar o contador de IDs
+-- Function to save the event ID counter
 function FoxTimeEventStorage.saveEventIdCounter(counter)
     local file = getFileWriter(counterFilePath, false, false)
     if file then
         file:write(tostring(counter))
         file:close()
     else
-        print("Erro ao salvar o contador de eventos em " .. counterFilePath)
+        print("Error saving event counter to " .. counterFilePath)
     end
 end

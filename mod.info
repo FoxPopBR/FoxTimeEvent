@@ -1,6 +1,14 @@
 name=FoxTimeEvent
-poster=poster.png
 id=FoxTimeEvent
-description=Biblioteca de controle de tempo disparo de gatilhos programados./Library for controlling the timing of scheduled triggers.
+poster=logo.png
+icon=FoxTimeEventIco.ico
+version=1.0.0
+modtype=lua
+enabled=true
+description=FoxTimeEvent is a powerful solution for mod developers in Project Zomboid, offering an efficient and accurate solution for managing time-based scheduled events.
+description=Its ability to centralize time checks, handle multiple requests, and easily integrate with other mods makes it an ideal choice for optimizing the performance and functionality of your mods. 
+description=
+description=FoxTimeEvent é uma solução poderosa para desenvolvedores de mods em Project Zomboid, oferecendo uma solução eficiente e precisa para gerenciamento de eventos programados baseados em tempo.
+description=Sua capacidade de centralizar verificações de tempo, lidar com múltiplas requisições e integrar-se facilmente com outros mods faz dele uma escolha ideal para otimizar o desempenho e a funcionalidade dos seus mods.
 author=FoxPop
 url=https://github.com/FoxPopBR
