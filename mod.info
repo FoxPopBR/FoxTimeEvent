@@ -1,0 +1,6 @@
+name=FoxTimeEvent
+poster=poster.png
+id=FoxTimeEvent
+description=Biblioteca de controle de tempo disparo de gatilhos programados./Library for controlling the timing of scheduled triggers.
+author=FoxPop
+url=https://github.com/FoxPopBR
