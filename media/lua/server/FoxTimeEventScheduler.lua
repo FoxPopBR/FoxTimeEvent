@@ -1,42 +1,42 @@
--- Arquivo: FoxTimeEventScheduler.lua
+-- File: FoxTimeEventScheduler.lua
 
 FoxTimeEventScheduler = {}
 
--- Função para agendar a próxima verificação
+-- Function to schedule the next verification
 function FoxTimeEventScheduler.scheduleNextVerification()
-    -- Remover verificações anteriores
+    -- Remove previous verifications
     Events.EveryDays.Remove(FoxTimeEventScheduler.verifyNextEvent)
     Events.EveryHours.Remove(FoxTimeEventScheduler.verifyNextEvent)
     Events.EveryTenMinutes.Remove(FoxTimeEventScheduler.verifyNextEvent)
     Events.EveryOneMinute.Remove(FoxTimeEventScheduler.verifyNextEvent)
 
     if #FoxTimeEvent.events == 0 then
-        print("[FoxTimeEventScheduler] Nenhum evento pendente. Verificação suspensa.")
+        print("[FoxTimeEventScheduler] No pending events. Verification suspended.")
         return
     end
 
-    -- Obter o próximo evento e o tempo atual
+    -- Get the next event and current time
     local nextEvent = FoxTimeEvent.events[1]
     local currentTime = FoxTimeEventUtils.getCurrentGameTime()
     local hoursDifference = FoxTimeEventUtils.calculateHoursDifference(currentTime, nextEvent.data_end)
 
-    -- Ajustar a frequência de verificação com base no tempo restante, incluindo margens
-    if hoursDifference >= 26 then  -- Margem de 1 hora
-        print("[FoxTimeEventScheduler] Verificação agendada para EveryDays.")
+    -- Adjust verification frequency based on remaining time, including margins
+    if hoursDifference >= 26 then  -- Margin of 1 hour
+        print("[FoxTimeEventScheduler] Scheduling verification for EveryDays.")
         Events.EveryDays.Add(FoxTimeEventScheduler.verifyNextEvent)
-    elseif hoursDifference >= 1 + (10/60) + (1/60) then  -- Margem de 11 minutos
-        print("[FoxTimeEventScheduler] Verificação agendada para EveryHours.")
+    elseif hoursDifference >= 1 + (10/60) + (1/60) then  -- Margin of 11 minutes
+        print("[FoxTimeEventScheduler] Scheduling verification for EveryHours.")
         Events.EveryHours.Add(FoxTimeEventScheduler.verifyNextEvent)
-    elseif hoursDifference >= (10/60) + (1/60) then  -- Margem de 1 minuto
-        print("[FoxTimeEventScheduler] Verificação agendada para EveryTenMinutes.")
+    elseif hoursDifference >= (10/60) + (1/60) then  -- Margin of 1 minute
+        print("[FoxTimeEventScheduler] Scheduling verification for EveryTenMinutes.")
         Events.EveryTenMinutes.Add(FoxTimeEventScheduler.verifyNextEvent)
     else
-        print("[FoxTimeEventScheduler] Verificação agendada para EveryOneMinute.")
+        print("[FoxTimeEventScheduler] Scheduling verification for EveryOneMinute.")
         Events.EveryOneMinute.Add(FoxTimeEventScheduler.verifyNextEvent)
     end
 end
 
--- Função para verificar o próximo evento
+-- Function to verify the next event
 function FoxTimeEventScheduler.verifyNextEvent()
     if #FoxTimeEvent.events == 0 then
         return
@@ -45,26 +45,26 @@ function FoxTimeEventScheduler.verifyNextEvent()
     local nextEvent = FoxTimeEvent.events[1]
     local currentTime = FoxTimeEventUtils.getCurrentGameTime()
 
-    -- Log para depuração
-    print("[FoxTimeEvent] Tempo atual: " .. table.concat(currentTime, ","))
-    print("[FoxTimeEvent] Tempo do próximo evento: " .. table.concat(nextEvent.data_end, ","))
-    print("[FoxTimeEvent] Verificando se é hora de acionar o evento ID: " .. nextEvent.idprocess)
+    -- Debugging logs
+    print("[FoxTimeEvent] Current time: " .. table.concat(currentTime, ","))
+    print("[FoxTimeEvent] Next event time: " .. table.concat(nextEvent.data_end, ","))
+    print("[FoxTimeEvent] Checking if it's time to trigger event ID: " .. nextEvent.idprocess)
 
     if FoxTimeEventUtils.isTimeToTrigger(currentTime, nextEvent.data_end) then
-        -- Obter o callback a partir do idprocess
+        -- Get the callback using idprocess
         local callbackFunc = FoxTimeEvent.callbacks[nextEvent.idprocess]
         if callbackFunc then
             callbackFunc(nextEvent)
         else
-            print("[FoxTimeEvent] Callback não encontrado para o evento ID: " .. nextEvent.idprocess)
+            print("[FoxTimeEvent] Callback not found for event ID: " .. nextEvent.idprocess)
         end
 
-        -- Remover o evento da lista e salvar
+        -- Remove the event from the list and save
         table.remove(FoxTimeEvent.events, 1)
         FoxTimeEvent.callbacks[nextEvent.idprocess] = nil
         FoxTimeEventStorage.saveEvents(FoxTimeEvent.events)
     end
 
-    -- Após a verificação, reagendar a próxima verificação
+    -- Reschedule the next verification
     FoxTimeEventScheduler.scheduleNextVerification()
 end

@@ -1,62 +1,62 @@
--- Arquivo: FoxTimeEvent.lua
+-- File: FoxTimeEvent.lua
 
--- Definir o namespace do mod
+-- Define the mod's namespace
 FoxTimeEvent = {}
-FoxTimeEvent.events = {}    -- Lista de eventos agendados
-FoxTimeEvent.callbacks = {} -- Tabela de callbacks por evento
+FoxTimeEvent.events = {}    -- List of scheduled events
+FoxTimeEvent.callbacks = {} -- Callback table by event
 
--- Importar módulos necessários
+-- Import required modules
 require "FoxTimeEventUtils"
 require "FoxTimeEventStorage"
 require "FoxTimeEventScheduler"
 
--- Função para verificar se um evento já está registrado para o jogador e a data específica
+-- Function to check if an event is already registered for a player and specific date
 function FoxTimeEvent.isEventAlreadyRegistered(idPlayer, data_end)
-    for _, evento in ipairs(FoxTimeEvent.events) do
-        if evento.idPlayer == idPlayer and table.concat(evento.data_end, ",") == table.concat(data_end, ",") then
+    for _, event in ipairs(FoxTimeEvent.events) do
+        if event.idPlayer == idPlayer and table.concat(event.data_end, ",") == table.concat(data_end, ",") then
             return true
         end
     end
     return false
 end
 
--- Função pública para registrar um evento com acréscimo de tempo
+-- Public function to register an event with a time interval
 function FoxTimeEvent.registerEventWithInterval(addTimeTable, idPlayer, modName, callbackName, customMessage)
-    -- Validação de entrada
+    -- Input validation
     if not addTimeTable or type(addTimeTable) ~= "table" then
-        error("[FoxTimeEvent] Erro: addTimeTable inválido fornecido.")
+        error("[FoxTimeEvent] Error: Invalid addTimeTable provided.")
         return
     end
     if not idPlayer or idPlayer == "" then
-        error("[FoxTimeEvent] Erro: idPlayer é obrigatório.")
+        error("[FoxTimeEvent] Error: idPlayer is required.")
         return
     end
     if not modName or modName == "" then
-        error("[FoxTimeEvent] Erro: modName é obrigatório.")
+        error("[FoxTimeEvent] Error: modName is required.")
         return
     end
     if not callbackName or callbackName == "" then
-        error("[FoxTimeEvent] Erro: callbackName é obrigatório.")
+        error("[FoxTimeEvent] Error: callbackName is required.")
         return
     end
 
     local currentTime = FoxTimeEventUtils.getCurrentGameTime()
     local targetDate = FoxTimeEventUtils.addTimeToCurrent(currentTime, addTimeTable)
 
-    -- Verificar se o evento já está registrado
+    -- Check if the event is already registered
     if FoxTimeEvent.isEventAlreadyRegistered(idPlayer, targetDate) then
-        print("[FoxTimeEvent] Evento já registrado para o jogador: " .. idPlayer)
+        print("[FoxTimeEvent] Event already registered for player: " .. idPlayer)
         return
     end
 
-    -- Validar se o callback existe no escopo global
+    -- Validate if the callback exists in the global scope
     if not _G[callbackName] then
-        print("[FoxTimeEvent] Erro: Callback '" .. callbackName .. "' não encontrado no escopo global.")
+        print("[FoxTimeEvent] Error: Callback '" .. callbackName .. "' not found in the global scope.")
         return
     end
 
-    -- Criar o evento
-    local evento = {
+    -- Create the event
+    local event = {
         idprocess = FoxTimeEventUtils.generateId(modName),
         idPlayer = idPlayer,
         data_start = currentTime,
@@ -66,55 +66,55 @@ function FoxTimeEvent.registerEventWithInterval(addTimeTable, idPlayer, modName,
         customMessage = customMessage or "customize this msg"
     }
 
-    -- Adicionar o evento à lista e salvar
-    table.insert(FoxTimeEvent.events, evento)
-    FoxTimeEvent.callbacks[evento.idprocess] = _G[callbackName]
+    -- Add the event to the list and save
+    table.insert(FoxTimeEvent.events, event)
+    FoxTimeEvent.callbacks[event.idprocess] = _G[callbackName]
     FoxTimeEventUtils.sortEvents(FoxTimeEvent.events)
     FoxTimeEventStorage.saveEvents(FoxTimeEvent.events)
 
-    -- Agendar a próxima verificação
+    -- Schedule the next verification
     FoxTimeEventScheduler.scheduleNextVerification()
 end
 
--- Função pública para registrar um evento em uma data específica
+-- Public function to register an event at a specific date
 function FoxTimeEvent.registerEventAtDate(targetDate, idPlayer, modName, callbackName, customMessage)
-    -- Validação de entrada
+    -- Input validation
     if not targetDate or type(targetDate) ~= "table" then
-        error("[FoxTimeEvent] Erro: targetDate inválido fornecido.")
+        error("[FoxTimeEvent] Error: Invalid targetDate provided.")
         return
     end
     if not idPlayer or idPlayer == "" then
-        error("[FoxTimeEvent] Erro: idPlayer é obrigatório.")
+        error("[FoxTimeEvent] Error: idPlayer is required.")
         return
     end
     if not modName or modName == "" then
-        error("[FoxTimeEvent] Erro: modName é obrigatório.")
+        error("[FoxTimeEvent] Error: modName is required.")
         return
     end
     if not callbackName or callbackName == "" then
-        error("[FoxTimeEvent] Erro: callbackName é obrigatório.")
+        error("[FoxTimeEvent] Error: callbackName is required.")
         return
     end
 
-    -- Normalizar a data alvo
+    -- Normalize the target date
     targetDate = FoxTimeEventUtils.normalizeTime(
         targetDate[1], targetDate[2], targetDate[3], targetDate[4], targetDate[5]
     )
 
-    -- Verificar se o evento já está registrado
+    -- Check if the event is already registered
     if FoxTimeEvent.isEventAlreadyRegistered(idPlayer, targetDate) then
-        print("[FoxTimeEvent] Evento já registrado para o jogador: " .. idPlayer)
+        print("[FoxTimeEvent] Event already registered for player: " .. idPlayer)
         return
     end
 
-    -- Validar se o callback existe no escopo global
+    -- Validate if the callback exists in the global scope
     if not _G[callbackName] then
-        print("[FoxTimeEvent] Erro: Callback '" .. callbackName .. "' não encontrado no escopo global.")
+        print("[FoxTimeEvent] Error: Callback '" .. callbackName .. "' not found in the global scope.")
         return
     end
 
-    -- Criar o evento
-    local evento = {
+    -- Create the event
+    local event = {
         idprocess = FoxTimeEventUtils.generateId(modName),
         idPlayer = idPlayer,
         data_start = FoxTimeEventUtils.getCurrentGameTime(),
@@ -124,55 +124,56 @@ function FoxTimeEvent.registerEventAtDate(targetDate, idPlayer, modName, callbac
         customMessage = customMessage or "customize this msg"
     }
 
-    -- Adicionar o evento à lista e salvar
-    table.insert(FoxTimeEvent.events, evento)
-    FoxTimeEvent.callbacks[evento.idprocess] = _G[callbackName]
+    -- Add the event to the list and save
+    table.insert(FoxTimeEvent.events, event)
+    FoxTimeEvent.callbacks[event.idprocess] = _G[callbackName]
     FoxTimeEventUtils.sortEvents(FoxTimeEvent.events)
     FoxTimeEventStorage.saveEvents(FoxTimeEvent.events)
 
-    -- Agendar a próxima verificação
+    -- Schedule the next verification
     FoxTimeEventScheduler.scheduleNextVerification()
 end
 
--- Função para inicializar o mod ao iniciar o jogo
+-- Initialization function when the game starts
 function FoxTimeEvent.init()
-    -- Carregar eventos persistidos
+    -- Load persisted events
     FoxTimeEvent.events = FoxTimeEventStorage.loadEvents()
 
-    -- Reassociar callbacks
-    for _, evento in ipairs(FoxTimeEvent.events) do
-        if evento.callbackName then
-            local callbackFunc = _G[evento.callbackName]
+    -- Reassociate callbacks
+    for _, event in ipairs(FoxTimeEvent.events) do
+        if event.callbackName then
+            local callbackFunc = _G[event.callbackName]
             if callbackFunc then
-                FoxTimeEvent.callbacks[evento.idprocess] = callbackFunc
+                FoxTimeEvent.callbacks[event.idprocess] = callbackFunc
+                print("[FoxTimeEvent] Callback reassociated for event ID: " .. event.idprocess)
             else
-                print("[FoxTimeEvent] Callback não encontrado para o evento ID: " .. evento.idprocess)
+                print("[FoxTimeEvent] Callback not found for event ID: " .. event.idprocess)
             end
         end
     end
 
-    -- Limpar eventos expirados ou inválidos
+    -- Clean up expired or invalid events
     FoxTimeEvent.cleanupExpiredEvents()
     FoxTimeEvent.cleanupOrphanEvents()
 
-    -- Ordenar eventos e agendar a próxima verificação, se houver eventos
+    -- Sort events and schedule the next verification if there are events
     if #FoxTimeEvent.events > 0 then
         FoxTimeEventUtils.sortEvents(FoxTimeEvent.events)
         FoxTimeEventScheduler.scheduleNextVerification()
     end
 end
 
--- Função para limpar eventos expirados
+-- Function to clean up expired events
 function FoxTimeEvent.cleanupExpiredEvents()
     local currentTime = FoxTimeEventUtils.getCurrentGameTime()
     local validEvents = {}
 
-    for _, evento in ipairs(FoxTimeEvent.events) do
-        if FoxTimeEventUtils.compareDates(currentTime, evento.data_end) == -1 then
-            table.insert(validEvents, evento)
+    for _, event in ipairs(FoxTimeEvent.events) do
+        if FoxTimeEventUtils.compareDates(currentTime, event.data_end) == -1 then
+            table.insert(validEvents, event)
         else
-            print("[FoxTimeEvent] Removendo evento expirado ID: " .. evento.idprocess)
-            FoxTimeEvent.callbacks[evento.idprocess] = nil
+            print("[FoxTimeEvent] Removing expired event ID: " .. event.idprocess)
+            FoxTimeEvent.callbacks[event.idprocess] = nil
         end
     end
 
@@ -180,15 +181,15 @@ function FoxTimeEvent.cleanupExpiredEvents()
     FoxTimeEventStorage.saveEvents(FoxTimeEvent.events)
 end
 
--- Função para limpar eventos com callbacks inválidos
+-- Function to clean up events with invalid callbacks
 function FoxTimeEvent.cleanupOrphanEvents()
     local validEvents = {}
 
-    for _, evento in ipairs(FoxTimeEvent.events) do
-        if FoxTimeEvent.callbacks[evento.idprocess] then
-            table.insert(validEvents, evento)
+    for _, event in ipairs(FoxTimeEvent.events) do
+        if FoxTimeEvent.callbacks[event.idprocess] then
+            table.insert(validEvents, event)
         else
-            print("[FoxTimeEvent] Removendo evento com callback inválido ID: " .. evento.idprocess)
+            print("[FoxTimeEvent] Removing event with invalid callback ID: " .. event.idprocess)
         end
     end
 
@@ -196,8 +197,8 @@ function FoxTimeEvent.cleanupOrphanEvents()
     FoxTimeEventStorage.saveEvents(FoxTimeEvent.events)
 end
 
--- Registrar a função de inicialização no evento OnGameStart
+-- Register the initialization function to the OnGameStart event
 Events.OnGameStart.Add(FoxTimeEvent.init)
 
--- Mensagem de carregamento
-print("[FoxTimeEvent] Script FoxTimeEvent.lua carregado com sucesso!")
+-- Loading message
+print("[FoxTimeEvent] FoxTimeEvent.lua script loaded successfully!")
