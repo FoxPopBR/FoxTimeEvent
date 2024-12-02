@@ -25,19 +25,19 @@ function FoxTimeEvent.registerEventWithInterval(addTimeTable, idPlayer, modName,
     -- Input validation
     if not addTimeTable or type(addTimeTable) ~= "table" then
         error("[FoxTimeEvent] Error: Invalid addTimeTable provided.")
-        return
+        return nil
     end
     if not idPlayer or idPlayer == "" then
         error("[FoxTimeEvent] Error: idPlayer is required.")
-        return
+        return nil
     end
     if not modName or modName == "" then
         error("[FoxTimeEvent] Error: modName is required.")
-        return
+        return nil
     end
     if not callbackName or callbackName == "" then
         error("[FoxTimeEvent] Error: callbackName is required.")
-        return
+        return nil
     end
 
     local currentTime = FoxTimeEventUtils.getCurrentGameTime()
@@ -46,13 +46,13 @@ function FoxTimeEvent.registerEventWithInterval(addTimeTable, idPlayer, modName,
     -- Check if the event is already registered
     if FoxTimeEvent.isEventAlreadyRegistered(idPlayer, targetDate) then
         print("[FoxTimeEvent] Event already registered for player: " .. idPlayer)
-        return
+        return nil
     end
 
     -- Validate if the callback exists in the global scope
     if not _G[callbackName] then
         print("[FoxTimeEvent] Error: Callback '" .. callbackName .. "' not found in the global scope.")
-        return
+        return nil
     end
 
     -- Create the event
@@ -74,6 +74,9 @@ function FoxTimeEvent.registerEventWithInterval(addTimeTable, idPlayer, modName,
 
     -- Schedule the next verification
     FoxTimeEventScheduler.scheduleNextVerification()
+
+    -- Return the event information
+    return event
 end
 
 -- Public function to register an event at a specific date
@@ -132,6 +135,7 @@ function FoxTimeEvent.registerEventAtDate(targetDate, idPlayer, modName, callbac
 
     -- Schedule the next verification
     FoxTimeEventScheduler.scheduleNextVerification()
+    return event
 end
 
 -- Initialization function when the game starts

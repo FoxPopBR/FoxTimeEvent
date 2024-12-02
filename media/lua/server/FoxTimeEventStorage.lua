@@ -1,5 +1,5 @@
 -- File: FoxTimeEventStorage.lua
-
+if FoxTimeEventStorage then return end
 FoxTimeEventStorage = {}
 
 local eventsFilePath = "/FoxTimeEvent/active_events.txt"
